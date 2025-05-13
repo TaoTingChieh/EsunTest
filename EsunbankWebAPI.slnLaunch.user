@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "新增設定檔",
+    "Projects": [
+      {
+        "Path": "EsunbankWebAPI\\EsunbankWebAPI.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "EsunFrontEnd\\EsunFrontEnd.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

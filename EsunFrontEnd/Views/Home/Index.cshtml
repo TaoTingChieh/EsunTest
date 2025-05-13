@@ -1,0 +1,116 @@
+﻿@* Index.cshtml：首頁顯示商品與加入喜好清單按鈕 *@
+@model List<App.Model.GetProductRes>
+@{
+    ViewData["Title"] = "商品總覽";
+    var keyword = Context.Request.Query["keyword"].ToString();
+    var minPrice = Context.Request.Query["minPrice"].ToString();
+    var maxPrice = Context.Request.Query["maxPrice"].ToString();
+    var sort = Context.Request.Query["sort"].ToString();
+
+    var filtered = Model.AsEnumerable();
+    if (!string.IsNullOrEmpty(keyword))
+    {
+        filtered = filtered.Where(m => m.ProductName.Contains(keyword));
+    }
+    if (decimal.TryParse(minPrice, out var min))
+    {
+        filtered = filtered.Where(m => m.Price >= min);
+    }
+    if (decimal.TryParse(maxPrice, out var max))
+    {
+        filtered = filtered.Where(m => m.Price <= max);
+    }
+    if (sort == "price")
+    {
+        filtered = filtered.OrderBy(m => m.Price);
+    }
+    else if (sort == "price_desc")
+    {
+        filtered = filtered.OrderByDescending(m => m.Price);
+    }
+    else if (sort == "fee")
+    {
+        filtered = filtered.OrderBy(m => m.FeeRate);
+    }
+    else if (sort == "fee_desc")
+    {
+        filtered = filtered.OrderByDescending(m => m.FeeRate);
+    }
+
+    string BuildSortLink(string field, string currentSort)
+    {
+        string direction = currentSort == field ? field + "_desc" : field;
+        var queryParams = new Dictionary<string, string>
+                {
+                    ["keyword"] = keyword,
+                    ["minPrice"] = minPrice,
+                    ["maxPrice"] = maxPrice,
+                    ["sort"] = direction
+                };
+        var queryString = string.Join("&", queryParams.Where(kv => !string.IsNullOrEmpty(kv.Value)).Select(kv => $"{kv.Key}={kv.Value}"));
+        return $"?{queryString}";
+    }
+}
+
+<h2 class="text-dark mb-4 fw-bold">@ViewData["Title"]</h2>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-3">
+        <input type="text" name="keyword" value="@keyword" class="form-control" placeholder="商品名稱關鍵字" />
+    </div>
+ 
+    <div class="col-md-3">
+        <select class="form-select" name="sort">
+            <option value="" selected="@(string.IsNullOrEmpty(sort))">-- 排序方式 --</option>
+            <option value="price" selected="@(sort == "price")">價格：低到高</option>
+            <option value="price_desc" selected="@(sort == "price_desc")">價格：高到低</option>
+            <option value="fee" selected="@(sort == "fee")">手續費率：低到高</option>
+            <option value="fee_desc" selected="@(sort == "fee_desc")">手續費率：高到低</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-outline-secondary w-100" type="submit">🔍 查詢</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered shadow-sm rounded-3 overflow-hidden">
+        <thead class="table-success text-center">
+            <tr>
+                <th>商品名稱</th>
+                <th>
+                    <a href="@BuildSortLink("price", sort)" class="text-decoration-none text-dark">
+                        價格
+                        @(sort == "price" ? "▲" : sort == "price_desc" ? "▼" : "")
+                    </a>
+                </th>
+                <th>
+                    <a href="@BuildSortLink("fee", sort)" class="text-decoration-none text-dark">
+                        手續費率 (%)
+                        @(sort == "fee" ? "▲" : sort == "fee_desc" ? "▼" : "")
+                    </a>
+                </th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in filtered)
+            {
+                <tr class="align-middle text-center">
+                    <td class="fw-semibold text-start">@item.ProductName</td>
+                    <td class="text-end">@item.Price.ToString("C")</td>
+                    <td>@(item.FeeRate * 100)</td>
+                    <td>
+                        <form asp-controller="LikeList" asp-action="Create" method="get" class="m-0">
+                            <input type="hidden" name="ProductNo" value="@item.ProductNo" />
+                            <input type="hidden" name="ProductName" value="@item.ProductName" />
+                            <input type="hidden" name="Price" value="@item.Price" />
+                            <input type="hidden" name="FeeRate" value="@item.FeeRate" />
+                            <button type="submit" class="btn btn-sm btn-outline-success">➕ 加入</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

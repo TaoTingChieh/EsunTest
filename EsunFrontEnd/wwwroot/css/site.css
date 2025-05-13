@@ -1,0 +1,50 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* site.css */
+
+body {
+    background-color: #f7f9fc;
+    font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+/* navbar 頂部陰影與 Logo 美化 */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #198754 !important;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: background 0.3s ease;
+}
+
+    .navbar-nav .nav-link:hover {
+        background-color: #eaf6f0;
+        border-radius: 0.5rem;
+    }
+
+/* 按鈕圖示與邊距美化 */
+.btn-outline-success {
+    font-weight: 500;
+    padding: 0.4rem 0.75rem;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+footer {
+    font-size: 0.875rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}

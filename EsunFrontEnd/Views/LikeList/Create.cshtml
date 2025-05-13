@@ -1,0 +1,99 @@
+﻿@model App.Model.LikeListCreateRequest
+@{
+    ViewData["Title"] = "加入喜好清單";
+}
+
+<h2 class="mb-4 fw-bold">@ViewData["Title"]</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+<form asp-action="Create" method="post" class="row g-3">
+    <input asp-for="ProductNo" type="hidden" />
+    <input type="hidden" asp-for="Email" value="123asd@gmail.com" />
+    <div class="col-md-6">
+        <label asp-for="ProductName" class="form-label">商品名稱</label>
+        <input asp-for="ProductName" class="form-control" readonly />
+        <span asp-validation-for="ProductName" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Price" class="form-label">價格</label>
+        <input asp-for="Price" class="form-control" id="Price" readonly />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="FeeRate" class="form-label">手續費率 (%)</label>
+        <input asp-for="FeeRate" class="form-control" id="FeeRate" readonly />
+        <span asp-validation-for="FeeRate" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Account" class="form-label">扣款帳號</label>
+        <input asp-for="Account" class="form-control" placeholder="請輸入扣款帳號" />
+        <span asp-validation-for="Account" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="ProductCount" class="form-label">購買數量</label>
+        <input asp-for="ProductCount" class="form-control" id="ProductCount" placeholder="請輸入數量" min="1" />
+        <span asp-validation-for="ProductCount" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">總金額</label>
+        <input class="form-control" id="TotalPriceDisplay" readonly />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">手續費</label>
+        <input class="form-control" id="TotalFeeDisplay" readonly />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">預計總扣款</label>
+        <input class="form-control" id="TotalAmountDisplay" readonly />
+    </div>
+
+    <input type="hidden" asp-for="TotalPrice" />
+    <input type="hidden" asp-for="TotalFee" />
+    <input type="hidden" asp-for="TotalAmount" />
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">✔ 加入喜好清單</button>
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2">返回</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function calculate() {
+            const price = parseFloat($('#Price').val()) || 0;
+            const feeRate = parseFloat($('#FeeRate').val()) || 0;
+            const count = parseInt($('#ProductCount').val()) || 0;
+
+            if (count < 1) {
+                $('#TotalPriceDisplay').val("");
+                $('#TotalFeeDisplay').val("");
+                $('#TotalAmountDisplay').val("");
+                return;
+            }
+
+            const total = price * count;
+            const fee = total * feeRate;
+            const amount = total + fee;
+
+            $('#TotalPriceDisplay').val(total.toLocaleString('en-US', { style: 'currency', currency: 'TWD' }));
+            $('#TotalFeeDisplay').val(fee.toLocaleString('en-US', { style: 'currency', currency: 'TWD' }));
+            $('#TotalAmountDisplay').val(amount.toLocaleString('en-US', { style: 'currency', currency: 'TWD' }));
+
+            $('[name=TotalPrice]').val(total);
+            $('[name=TotalFee]').val(fee);
+            $('[name=TotalAmount]').val(amount);
+        }
+
+        $(document).ready(function () {
+            calculate();
+            $('#ProductCount').on('input', calculate);
+        });
+    </script>
+}

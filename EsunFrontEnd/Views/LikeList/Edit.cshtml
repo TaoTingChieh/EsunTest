@@ -1,0 +1,82 @@
+﻿@model App.Model.LikeListEditRequest
+@{
+    ViewData["Title"] = "編輯喜好清單";
+}
+
+<h2 class="mb-4 fw-bold">@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post" class="row g-3">
+    <input type="hidden" asp-for="LikeListNo" />
+    <input type="hidden" asp-for="Price" id="HiddenPrice" />
+    <input type="hidden" asp-for="FeeRate" id="HiddenFeeRate" />
+    <input type="hidden" asp-for="TotalPrice" id="HiddenTotalPrice" />
+    <input type="hidden" asp-for="TotalFee" id="HiddenTotalFee" />
+    <input type="hidden" asp-for="TotalAmount" id="HiddenTotalAmount" />
+    <input type="hidden" asp-for="Email" value="123asd@gmail.com" />
+    <div class="col-md-6">
+        <label asp-for="ProductName" class="form-label">商品名稱</label>
+        <input asp-for="ProductName" class="form-control" readonly />
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Price" class="form-label">商品價格</label>
+        <input asp-for="Price" class="form-control" id="Price" readonly />
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="FeeRate" class="form-label">手續費率 (%)</label>
+        <input asp-for="FeeRate" class="form-control" id="FeeRate" readonly />
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Account" class="form-label">扣款帳號</label>
+        <input asp-for="Account" class="form-control" />
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="ProductCount" class="form-label">購買數量</label>
+        <input asp-for="ProductCount" class="form-control" id="ProductCount" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">預計扣款金額</label>
+        <input class="form-control" id="TotalAmount" readonly />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">預估手續費</label>
+        <input class="form-control" id="TotalFee" readonly />
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">💾 儲存變更</button>
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2">返回清單</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+               function calculate() {
+            const price = parseFloat($('#Price').val()) || 0;
+            const feeRate = parseFloat($('#FeeRate').val()) || 0;
+            const count = parseInt($('#ProductCount').val()) || 0;
+
+            const total = price * count;
+            const fee = total * feeRate;
+            const amount = total + fee;
+
+            $('#TotalAmount').val(amount.toLocaleString('en-US', { style: 'currency', currency: 'TWD' }));
+            $('#TotalFee').val(fee.toLocaleString('en-US', { style: 'currency', currency: 'TWD' }));
+
+            $('#HiddenTotalPrice').val(total);
+            $('#HiddenTotalFee').val(fee);
+            $('#HiddenTotalAmount').val(amount);
+        }
+
+               $(document).ready(function () {
+            calculate();
+            $('#ProductCount').on('input', calculate);
+        });
+    </script>
+}

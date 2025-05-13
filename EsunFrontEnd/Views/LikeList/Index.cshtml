@@ -1,0 +1,56 @@
+﻿@model List<App.Model.LikeListViewModel>
+@{
+    ViewData["Title"] = "我的喜好清單";
+}
+
+<div class="container">
+    <h2 class="fw-bold mb-4 text-primary">@ViewData["Title"]</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center">目前尚未加入任何商品。</div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded-3">
+            <table class="table table-hover align-middle table-bordered">
+                <thead class="table-success text-center">
+                    <tr>
+                        <th class="w-25">商品名稱</th>
+                        <th class="w-10">數量</th>
+                        <th class="w-20">扣款帳號</th>
+                        <th class="w-15 text-end">預計扣款金額</th>
+                        <th class="w-15 text-end">總手續費</th>
+                        <th class="w-25">電子郵件</th>
+                        <th class="w-10 text-center">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="text-center">
+                            <td class="text-start text-break fw-semibold">@item.ProductName</td>
+                            <td>@item.ProductCount</td>
+                            <td class="text-break">@item.Account</td>
+                            <td class="text-end">@item.TotalAmount.ToString("C")</td>
+                            <td class="text-end">@item.TotalFee.ToString("C")</td>
+                            <td class="text-break text-start">@item.Email</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                    <form asp-action="Edit" method="get">
+                                        <input type="hidden" name="id" value="@item.LikeListNo" />
+                                        <button class="btn btn-sm btn-outline-primary">✏️ 編輯</button>
+                                    </form>
+                                    <form asp-action="Delete" method="post" onsubmit="return confirm('確定要刪除嗎？');">
+                                        <input type="hidden" name="id" value="@item.LikeListNo" />
+                                        <button class="btn btn-sm btn-outline-danger">🗑 刪除</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
